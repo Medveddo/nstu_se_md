@@ -1,0 +1,56 @@
+========
+  -- FAST inverse square root (float) benchmark (N=100000000, i=10, opt=O0) --  
+========
+Total time (all iterations): 32043148[µs].
+Average time (of one iteration): 3204314[µs].
+Average perfomance: 3.12079e+07 tasks per second.
+
+========
+  -- Inverse square root (float) benchmark (N=100000000, i=10, opt=O0) --  
+========
+Total time (all iterations): 28766547[µs].
+Average time (of one iteration): 2876654[µs].
+Average perfomance: 3.47626e+07 tasks per second.
+
+========
+  -- FAST inverse square root (float) benchmark (N=100000000, i=10, opt=O3) --  
+========
+Total time (all iterations): 2072726[µs].
+Average time (of one iteration): 207272[µs].
+Average perfomance: 4.82458e+08 tasks per second.
+
+========
+  -- Inverse square root (float) benchmark (N=100000000, i=10, opt=O3) --  
+========
+Total time (all iterations): 4025134[µs].
+Average time (of one iteration): 402513[µs].
+Average perfomance: 2.48439e+08 tasks per second.
+
+========
+  -- FAST inverse square root (double) benchmark (N=100000000, i=10, opt=O0) --  
+========
+Total time (all iterations): 31738642[µs].
+Average time (of one iteration): 3173864[µs].
+Average perfomance: 3.15073e+07 tasks per second.
+
+========
+  -- Inverse square root (double) benchmark (N=100000000, i=10, opt=O0) --  
+========
+Total time (all iterations): 32635611[µs].
+Average time (of one iteration): 3263561[µs].
+Average perfomance: 3.06414e+07 tasks per second.
+
+========
+  -- FAST inverse square root (double) benchmark (N=100000000, i=10, opt=O3) --  
+========
+Total time (all iterations): 2177699[µs].
+Average time (of one iteration): 217769[µs].
+Average perfomance: 4.59202e+08 tasks per second.
+
+========
+  -- Inverse square root (double) benchmark (N=100000000, i=10, opt=O3) --  
+========
+Total time (all iterations): 7948124[µs].
+Average time (of one iteration): 794812[µs].
+Average perfomance: 1.25816e+08 tasks per second.
+
