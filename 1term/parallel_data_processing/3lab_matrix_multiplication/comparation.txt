@@ -1,0 +1,73 @@
+>>> perf stat -e cache-misses ./dgemm 1000 1
+Generating data = 20329[µs]
+  -- DGEMM (v1) (N = 1000, 1 iterations) --
+Average =       15450467[µs]
+  Total =       15450467[µs]
+
+ Performance counter stats for './dgemm 1000 1':
+
+       118,103,873      cache-misses                                                
+
+      15.474045096 seconds time elapsed
+
+      15.460473000 seconds user
+       0.008002000 seconds sys
+
+
+>>> perf stat -e cache-misses ./dgemm 1000 2
+Generating data = 21579[µs]
+  -- DGEMM (v2) (N = 1000, 1 iterations) --
+Average =       3849743[µs]
+  Total =       3849743[µs]
+
+ Performance counter stats for './dgemm 1000 2':
+
+         6,922,665      cache-misses                                                
+
+       3.874987076 seconds time elapsed
+
+       3.862661000 seconds user
+       0.012008000 seconds sys
+
+
+>>> perf stat -e cache-misses ./dgemm 1000 3
+Generating data = 21844[µs]
+  -- DGEMM (v3) (N = 1000, 1 iterations) --
+Average =       2727698[µs]
+  Total =       2727698[µs]
+
+ Performance counter stats for './dgemm 1000 3':
+
+         7,728,903      cache-misses                                                
+
+       2.753193984 seconds time elapsed
+
+       2.741100000 seconds user
+       0.012004000 seconds sys
+
+>>> g++ -O0 -Wall -mavx dgemm_avx.cpp -o dgemm_avx
+>>> perf stat -e cache-misses ./dgemm_avx 1000 4
+Generating data = 24258[µs]
+  -- DGEMM (v4) (N = 1000, 1 iterations) --
+Average =       4634740[µs]
+  Total =       4634740[µs]
+
+ Performance counter stats for './dgemm_avx 1000 4':
+
+       113,415,890      cache-misses                                                
+
+       4.662529667 seconds time elapsed
+
+       4.649931000 seconds user
+       0.012004000 seconds sys
+
+>>> g++ -O3 -Wall dgemm.cpp -o dgemm && ./dgemm 1000 3 && rm ./dgemm
+Generating data = 19668[µs]
+  -- DGEMM (v3) (N = 1000, 1 iterations) --
+Average =       250969[µs]
+  Total =       250969[µs]
+>>> g++ -O3 -Wall -mavx dgemm_avx.cpp -o dgemm_avx && ./dgemm_avx 1000 4 && rm ./dgemm_avx
+Generating data = 20723[µs]
+  -- DGEMM (v4) (N = 1000, 1 iterations) --
+Average =       1501749[µs]
+  Total =       1501749[µs]

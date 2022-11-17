@@ -1,6 +1,9 @@
+// [Stupid or not?] Probably we can compile all previous versions (1,2,3) with -mavx flag. But I moved it to separate file
+
 #include <iostream>
 #include <string>
 #include <chrono>
+#include <immintrin.h>
 
 struct ThreeMatrixHandler
 {
@@ -229,6 +232,46 @@ void DGEMM_3(unsigned int N, ThreeMatrixHandler *matrixes)
     delete[] c;
 }
 
+// AVX Vectorization
+void DGEMM_4(unsigned int N, ThreeMatrixHandler *matrixes)
+{
+    double *a = new double[N * N];
+    double *b = new double[N * N];
+    double *c = new double[N * N];
+
+    MatrixToFlat(matrixes->a, a, N);
+    MatrixToFlat(matrixes->b, b, N);
+    MatrixToFlat(matrixes->c, c, N);
+
+    unsigned int n = N;
+
+    // https://www.jsums.edu/robotics/files/2016/12/FECS17_Proceedings-FEC3555.pdf?x14279
+    for (unsigned int i = 0; i < n; i++)
+    { // D1
+        for (unsigned int j = 0; j < n; j += 4)
+        { // D2
+            __m256d m0 = _mm256_setzero_pd();
+            for (unsigned int k = 0; k < n; k++)
+            { // D3
+                __m256d m1 = _mm256_broadcast_sd(a + i * n + k);
+                // https://stackoverflow.com/questions/32612190/how-to-solve-the-32-byte-alignment-issue-for-avx-load-store-operations
+                __m256d m2 = _mm256_loadu_pd((b + k * n + j));
+                __m256d m3 = _mm256_mul_pd(m1, m2);
+                m0 = _mm256_add_pd(m0, m3);
+            }
+            _mm256_storeu_pd(c + i * n + j, m0);
+        }
+    }
+
+    FlatToMatrix(a, matrixes->a, N);
+    FlatToMatrix(b, matrixes->b, N);
+    FlatToMatrix(c, matrixes->c, N);
+
+    delete[] a;
+    delete[] b;
+    delete[] c;
+}
+
 // Matrix 'A'
 // 0 0 0 0
 // 1 1 1 1
@@ -250,9 +293,10 @@ int MultiplicationTest()
     auto matrixes = CreateThreeConstMatrixes(4);
 
     // ShowMatrixes(matrixes);
-    DGEMM_1(4, matrixes);
+    // DGEMM_1(4, matrixes);
     // DGEMM_2(4, matrixes);
     // DGEMM_3(4, matrixes);
+    DGEMM_4(4, matrixes);
     ShowMatrixes(matrixes);
 
     DeallocateMatixes(4, matrixes);
@@ -295,6 +339,9 @@ int main(int argc, char const *argv[])
         break;
     case 3:
         degmm_func_pointer = DGEMM_3;
+        break;
+    case 4:
+        degmm_func_pointer = DGEMM_4;
         break;
     default:
         std::cout << "ERROR - Unknown version number" << std::endl;
