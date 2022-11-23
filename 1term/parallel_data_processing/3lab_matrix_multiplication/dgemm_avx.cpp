@@ -1,5 +1,3 @@
-// [Stupid or not?] Probably we can compile all previous versions (1,2,3) with -mavx flag. But I moved it to separate file
-
 #include <iostream>
 #include <string>
 #include <chrono>
@@ -232,7 +230,7 @@ void DGEMM_3(unsigned int N, ThreeMatrixHandler *matrixes)
     delete[] c;
 }
 
-// AVX Vectorization
+// Basic matrix multiplication but with AVX Vectorization
 void DGEMM_4(unsigned int N, ThreeMatrixHandler *matrixes)
 {
     double *a = new double[N * N];
@@ -245,14 +243,16 @@ void DGEMM_4(unsigned int N, ThreeMatrixHandler *matrixes)
 
     unsigned int n = N;
 
+    const unsigned int avxVectorDoublesCapacity = 4; // 256 / 64
+
     // https://www.jsums.edu/robotics/files/2016/12/FECS17_Proceedings-FEC3555.pdf?x14279
     for (unsigned int i = 0; i < n; i++)
-    { // D1
-        for (unsigned int j = 0; j < n; j += 4)
-        { // D2
+    {
+        for (unsigned int j = 0; j < n; j += avxVectorDoublesCapacity)
+        { 
             __m256d m0 = _mm256_setzero_pd();
             for (unsigned int k = 0; k < n; k++)
-            { // D3
+            {
                 __m256d m1 = _mm256_broadcast_sd(a + i * n + k);
                 // https://stackoverflow.com/questions/32612190/how-to-solve-the-32-byte-alignment-issue-for-avx-load-store-operations
                 __m256d m2 = _mm256_loadu_pd((b + k * n + j));
@@ -260,6 +260,70 @@ void DGEMM_4(unsigned int N, ThreeMatrixHandler *matrixes)
                 m0 = _mm256_add_pd(m0, m3);
             }
             _mm256_storeu_pd(c + i * n + j, m0);
+        }
+    }
+
+    FlatToMatrix(a, matrixes->a, N);
+    FlatToMatrix(b, matrixes->b, N);
+    FlatToMatrix(c, matrixes->c, N);
+
+    delete[] a;
+    delete[] b;
+    delete[] c;
+}
+
+// Blocks multiplication with AVX
+// TODO: This is does not work !
+void DGEMM_5(unsigned int N, ThreeMatrixHandler *matrixes)
+{
+    double *a = new double[N * N];
+    double *b = new double[N * N];
+    double *c = new double[N * N];
+
+    MatrixToFlat(matrixes->a, a, N);
+    MatrixToFlat(matrixes->b, b, N);
+    MatrixToFlat(matrixes->c, c, N);
+
+    double *a0, *b0, *c0;
+
+    const unsigned int blockSize = 4;
+    const unsigned int avxVectorDoublesCapacity = 4; // 256 / 64
+
+    unsigned int i, j, k, i0, j0, k0;
+
+    unsigned int n = N;
+
+    for (i = 0; i < n; i += blockSize)
+    {
+        for (j = 0; j < n; j += blockSize)
+        {
+            for (k = 0; k < n; k += blockSize)
+            {
+                for (i0 = 0, c0 = (c + i * n + j),
+                    a0 = (a + i * n + k);
+                     i0 < blockSize;
+                     ++i0, c0 += n, a0 += n)
+                {
+                    for (k0 = 0, b0 = (b + k * n + j);
+                         k0 < blockSize; ++k0, b0 += n)
+                    {
+                        // ???????????????????????????????????????????????????????
+                        double temp[4];
+                        __m256d m0 = _mm256_setzero_pd();
+                        for (j0 = 0; j0 < blockSize; j0+=avxVectorDoublesCapacity)
+                        {
+                            __m256d m1 = _mm256_broadcast_sd(&a0[k0]);
+                            __m256d m2 = _mm256_loadu_pd((&b0[j0]));
+                            __m256d m3 = _mm256_mul_pd(m1, m2);   
+                            m0 = _mm256_add_pd(m0, m3);
+                        }
+                        _mm256_storeu_pd(temp, m0);
+                        for (int ii = 0; ii < 4; ++ii){
+                            c0[j0] += temp[ii];
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -297,6 +361,7 @@ int MultiplicationTest()
     // DGEMM_2(4, matrixes);
     // DGEMM_3(4, matrixes);
     DGEMM_4(4, matrixes);
+    // DGEMM_5(4, matrixes);
     ShowMatrixes(matrixes);
 
     DeallocateMatixes(4, matrixes);

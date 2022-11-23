@@ -9,6 +9,9 @@ make bench_float_o0
 make bench_float_o3
 make bench_double_o0
 make bench_double_o3
+
+# All benchmarks
+make bench_float_o0 && make bench_float_o1 && make bench_float_o2 && make bench_float_o3 && make bench_double_o0 && make bench_double_o1 && make bench_double_o2 && make bench_double_o3
 ```
 
 ## Results
@@ -26,5 +29,4 @@ Average perfomance: 4.70146e+08 tasks per second.
 >>> tacts_per_task = cpu_freq / bench_perf
 >>> tacts_per_task
 7.23404255319149
-
 ```

@@ -23,7 +23,7 @@ std::vector<float> GenerateFloatData(int NumbersCount, float RandMax)
   // Random input data
   std::vector<float> numbers;
   numbers.reserve(NumbersCount);
-  for (uint32_t i = 0; i < NumbersCount; ++i)
+  for (int i = 0; i < NumbersCount; ++i)
   {
     // Generate float from 0.0 to 1.0, and append it to vector
     numbers.push_back(static_cast<float>(rand()) /
@@ -32,11 +32,11 @@ std::vector<float> GenerateFloatData(int NumbersCount, float RandMax)
 
   std::chrono::steady_clock::time_point end_random =
       std::chrono::steady_clock::now();
-  // std::cout << "Generating data = "
-  //           << std::chrono::duration_cast<std::chrono::microseconds>(
-  //                  end_random - begin_random)
-  //                  .count()
-  //           << "[µs]" << std::endl;
+  std::cout << "Generating data = "
+            << std::chrono::duration_cast<std::chrono::microseconds>(
+                   end_random - begin_random)
+                   .count()
+            << "[µs]" << std::endl;
 
   return numbers;
 }
@@ -231,7 +231,7 @@ int main(int argc, char const *argv[])
   std::string taskName = isSlowVersion ? "Inverse square root" : "FAST inverse square root";
 
   // Variables
-  const int NUMBERS_COUNT = 100000000;
+  const int TASKS_NUMBERS_COUNT = 100000000;
   const float RAND_MAX_ = 5.0F;
   const double RAND_MAX_D = 5.0;
   const int ITERATIONS_COUNT = 10;
@@ -248,10 +248,10 @@ int main(int argc, char const *argv[])
 
   if (isFloatOperand)
   {
-    std::vector<float> numbers = GenerateFloatData(NUMBERS_COUNT, RAND_MAX_);
+    std::vector<float> numbers = GenerateFloatData(TASKS_NUMBERS_COUNT, RAND_MAX_);
     std::vector<float> results;
-    results.reserve(NUMBERS_COUNT);
-    for (int i; i < ITERATIONS_COUNT; ++i)
+    results.reserve(TASKS_NUMBERS_COUNT);
+    for (int i = 0; i < ITERATIONS_COUNT; ++i)
     {
       if (!isSlowVersion)
       {
@@ -268,10 +268,10 @@ int main(int argc, char const *argv[])
   }
   else if (isDoubleOperand)
   {
-    std::vector<double> numbers = GenerateDoubleData(NUMBERS_COUNT, RAND_MAX_D);
+    std::vector<double> numbers = GenerateDoubleData(TASKS_NUMBERS_COUNT, RAND_MAX_D);
     std::vector<double> results;
-    results.reserve(NUMBERS_COUNT);
-    for (int i; i < ITERATIONS_COUNT; ++i)
+    results.reserve(TASKS_NUMBERS_COUNT);
+    for (int i = 0; i < ITERATIONS_COUNT; ++i)
     {
       if (!isSlowVersion)
       {
@@ -287,15 +287,17 @@ int main(int argc, char const *argv[])
     }
   }
 
+  unsigned long averageIterationTime = totalTime / static_cast<unsigned long>(ITERATIONS_COUNT);
+
   std::ostringstream stringStream;
-  stringStream << "  -- " << taskName << " (" << operandType << ") benchmark (N=" << NUMBERS_COUNT << ", i=" << ITERATIONS_COUNT << ", opt=" << optimizationFlag << ") --  ";
+  stringStream << "  -- " << taskName << " (" << operandType << ") benchmark (N=" << TASKS_NUMBERS_COUNT << ", i=" << ITERATIONS_COUNT << ", opt=" << optimizationFlag << ") --  ";
   std::string benchmarkHeader = stringStream.str();
 
   stringStream.str("");
   stringStream.clear();
   stringStream << "Total time (all iterations): " << totalTime << "[µs]." << std::endl
-               << "Average time (of one iteration): " << totalTime / ITERATIONS_COUNT << "[µs]." << std::endl
-               << "Average perfomance: " << static_cast<float>(NUMBERS_COUNT) / static_cast<float>(totalTime / ITERATIONS_COUNT) * 1000000 << " tasks per second." << std::endl;
+               << "Average time (of one iteration): " << averageIterationTime << "[µs]." << std::endl
+               << "Average perfomance: " << static_cast<float>(TASKS_NUMBERS_COUNT) / static_cast<float>(averageIterationTime) * 1000000 << " tasks per second." << std::endl;
   std::string benchmarkResults = stringStream.str();
 
   std::cout << "========" << std::endl
@@ -305,16 +307,17 @@ int main(int argc, char const *argv[])
 
   std::ofstream csvFile;
   csvFile.open("results.csv", std::ios_base::app);
-  csvFile << "PModel;Task;OpType;Opt;InsCount;Timer;Time[µs];LNum;AvTime[µs];AbsErr;RelErr;NTypicalTasks;TaskPerf[Tasks per second]\n";
+  csvFile << "PModel;Task;OpType;Opt;InsCount;Timer;Time[µs];LNum;AvTime[µs];AbsErr[µs];RelErr[%];NTypicalTasks;TaskPerf[Tasks per second]\n";
 
   unsigned int iterationNumber = 0;
   float perfomance;
   float averageTaskTime;
 
-  for (const auto &time : iterationsTime)
+  for (const auto &iteration_time : iterationsTime)
   {
-    perfomance = static_cast<float>(NUMBERS_COUNT) / static_cast<float>(time) * 1000000; // µs -> s
-    averageTaskTime = static_cast<float>(time) / static_cast<float>(NUMBERS_COUNT);
+    perfomance = static_cast<float>(TASKS_NUMBERS_COUNT) / static_cast<float>(iteration_time) * 1000000; // µs -> s
+    averageTaskTime = static_cast<float>(iteration_time) / static_cast<float>(TASKS_NUMBERS_COUNT);
+
     csvFile << "Intel(R) Core(TM) i7-4720HQ CPU @ 2.60GHz"
             << ";"
             << taskName
@@ -324,12 +327,12 @@ int main(int argc, char const *argv[])
             << taskOperationsCount << ";"
             << "std::chrono::steady_clock::now()"
             << ";"
-            << time << ";"
+            << iteration_time << ";"
             << iterationNumber++ << ";"
-            << averageTaskTime << ";" // AvTime
-            << 0 << ";"               // AbsError
-            << 0 << ";"               // RelError
-            << NUMBERS_COUNT << ";"
+            << averageTaskTime << ";"                                                                                                                                      // AvTime
+            << static_cast<long>(averageIterationTime - iteration_time) << ";"                                                                                             // AbsError
+            << static_cast<float>(static_cast<long>(averageIterationTime - iteration_time)) / static_cast<float>(static_cast<long>(averageIterationTime)) * 100.0f << "%;" // RelError
+            << TASKS_NUMBERS_COUNT << ";"
             << perfomance << ";"
             << "\n";
   }
@@ -337,7 +340,7 @@ int main(int argc, char const *argv[])
   csvFile.close();
 
   // Result comparation
-  bool showResultsComparation = 0;
+  const bool showResultsComparation = 0;
   if (showResultsComparation)
   {
     float example_x = 3.1415F;

@@ -67,12 +67,12 @@ echo "  ${available_swap}"
 
 echo -e "\n-- Newtork --\n"
 
-net_interfaces_count=$(ip link show | grep -c ": ")
+net_interfaces_count=$(ip -o -4 addr list | grep -c ": ")
 
 echo "  Network interfaces count: ${net_interfaces_count}"
 
 
-echo -e "+---+---------------------+-----------------+--------------------+\n| # |     Interface       | IP Address      |    MAC-address     |\n+---+---------------------+-----------------+--------------------+"
+echo -e "+---+---------------------+-----------------+--------------------+------------+------------+\n| # |     Interface       | IP Address      |    MAC-address     |   Upload   |  Download  |\n+---+---------------------+-----------------+--------------------+------------+------------+"
 
 counter=0
 for iface in $(ip -o -4 addr list | awk '{print $2}' | tr '\n' ' ')
@@ -80,9 +80,13 @@ do
     counter=$[$counter + 1]
     ipaddr=$(ip -o -4 addr list $iface | awk '{print $4}' | cut -d/ -f1)
     mac=$(ip address show ${iface} | grep -oP '(?<=link/ether\s)\K[\da-f:]+|(?<=link/loopback\s)\K[\da-f:]+')
-    printf "|%3s|%20s | %-16s| %18s |\n" $counter $iface $ipaddr $mac
+    speedtest_result=$(speedtest --simple --secure --source=${ipaddr} 2> /dev/null)
+    upload=$(grep -oP 'Upload: \K.*\s' <<< $speedtest_result) 
+    download=$(grep -oP 'Download: \K.*\s' <<< $speedtest_result) 
+    printf "|%3s|%20s | %-16s| %18s | %10s | %10s |\n" $counter $iface $ipaddr $mac $upload $download
+
 done
-echo "+---+---------------------+-----------------+--------------------+"
+echo "+---+---------------------+-----------------+--------------------+------------+------------+"
 
 # Speed ?
 # https://serverfault.com/questions/586322/how-to-find-out-capacity-for-network-interfaces

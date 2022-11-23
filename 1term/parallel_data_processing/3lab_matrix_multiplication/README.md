@@ -26,3 +26,6 @@ sudo apt install linux-perf
 ```shell
 sudo perf stat -e cache-misses ./dgemm 1000 1
 ```
+
+// 1. Maxrix size (Theoriticaly and fact) and block size comparation
+// Align ??? And loop unroling

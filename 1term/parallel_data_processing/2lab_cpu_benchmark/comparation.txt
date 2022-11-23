@@ -53,4 +53,3 @@ Average perfomance: 4.59202e+08 tasks per second.
 Total time (all iterations): 7948124[µs].
 Average time (of one iteration): 794812[µs].
 Average perfomance: 1.25816e+08 tasks per second.
-

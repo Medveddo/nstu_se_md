@@ -1,0 +1,48 @@
+Date: 2022-11-23 22:27:40
+Username: sizikovva
+PC name: vitelius
+
+-- Processor --
+
+  Model name:                      Intel(R) Core(TM) i7-4720HQ CPU @ 2.60GHz
+  Architecture:                    x86_64
+  CPU MHz:                         1203.149
+  CPU min MHz:                     800.0000
+  CPU max MHz:                     3600.0000
+  CPU(s):                          8
+  Thread(s) per core:              2
+
+-- RAM --
+
+  MemTotal:        8033676 kB
+  MemAvailable:    4270824 kB
+
+-- Hard Drive --
+
+  Total HDD:    sda      8:0    0 931.5G  0 disk 
+  Root mounted: ├─sda7   8:7    0  41.9G  0 part /
+
+df: /run/user/1000/doc: Operation not permitted
+df: /run/user/1000/doc: Operation not permitted
+df: /run/user/1000/doc: Operation not permitted
+
+                        Filesystem     Type            1K-blocks     Used Available Use% Mounted on
+  Available root:       /dev/sda7      ext4             42943856 28662864  12067360  71% /
+  Available home:       /dev/sda8      ext4             55821200 20087252  32865980  38% /home
+
+-- SWAP --
+
+  SwapTotal:       3880956 kB
+  SwapFree:        3880956 kB
+
+-- Newtork --
+
+  Network interfaces count: 4
++---+---------------------+-----------------+--------------------+------------+------------+
+| # |     Interface       | IP Address      |    MAC-address     |   Upload   |  Download  |
++---+---------------------+-----------------+--------------------+------------+------------+
+|  1|                  lo | 127.0.0.1       |  00:00:00:00:00:00 |            |            |
+|  2|              wlp4s0 | 192.168.1.2     |  34:02:86:02:1c:28 |      45.06 |      93.58 |
+|  3|             docker0 | 172.17.0.1      |  02:42:52:c2:a4:3f |       0.31 |       9.30 |
+|  4|     br-82338bd574c3 | 172.18.0.1      |  02:42:02:18:69:17 |            |            |
++---+---------------------+-----------------+--------------------+------------+------------+
