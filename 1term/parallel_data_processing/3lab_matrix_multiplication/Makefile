@@ -18,6 +18,9 @@ test:
 3: mm_3_1000
 4: mm_4_1000
 
+block:
+	bash -c "g++ -O0 -Wall -mavx dgemm_avx.cpp -o dgemm_avx && sudo perf stat -e cache-misses ./dgemm_avx 1000 3 && rm ./dgemm_avx"
+
 mm_1_2000:
 	bash -c "g++ -O0 -Wall -mavx dgemm_avx.cpp -o dgemm_avx && ./dgemm_avx 2000 1 && rm ./dgemm_avx"
 	

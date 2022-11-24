@@ -191,7 +191,9 @@ void DGEMM_3(unsigned int N, ThreeMatrixHandler *matrixes)
 
     double *a0, *b0, *c0;
 
-    const unsigned int blockSize = 20;
+    const unsigned int blockSize = 8;
+
+    std::cout << "Block size: " << blockSize << "\n";
 
     unsigned int i, j, k, i0, j0, k0;
 

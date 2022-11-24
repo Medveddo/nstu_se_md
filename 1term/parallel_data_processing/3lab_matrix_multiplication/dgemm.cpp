@@ -1,3 +1,5 @@
+// please check dgemm_avx.cpp for fresh code
+
 #include <iostream>
 #include <string>
 #include <chrono>
