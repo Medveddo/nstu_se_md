@@ -232,12 +232,12 @@ void Elevator::start_running(FloorsData *floorsData, unsigned int iterationsCoun
                << this->peopleInside.size() << std::endl;
             std::cout << ss.str();
           }
-
-
-          
           floorsData->mutex->unlock();
           std::this_thread::sleep_for(std::chrono::milliseconds(this->enterExitPersonTimeMs));
           floorsData->mutex->lock();
+
+          // in case when floorPeople gets mutated while sleep
+          iter = floorPeople->begin(); 
         }
         else
         {

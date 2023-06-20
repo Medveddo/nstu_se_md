@@ -122,6 +122,11 @@ public:
 
         spawnPersonsThread.join();
         this->houseState.await();
+
+        for (auto &&floor : this->floorsData.floors)
+        {
+            std::cout << "[main_thread] Floor["<<floor.id<<"] " <<floor.people.size() <<"people remained" << std::endl;
+        }
     }
 };
 
@@ -133,10 +138,11 @@ int main(int argc, char const *argv[])
     unsigned int nFloors = 5u;
     unsigned int defaultElevatorCapacity = 500u;
     unsigned int floorMoveTimeMs = 1000u;
-    // unsigned int floorMoveTimeMs = 0u;
     unsigned int enterExitPersonTimeMs = 500u;
-    // unsigned int enterExitPersonTimeMs = 0u;
     unsigned int spawnIntervalMs = 5000u;
+    
+    // unsigned int floorMoveTimeMs = 0u;
+    // unsigned int enterExitPersonTimeMs = 0u;
     // unsigned int spawnIntervalMs = 0u;
 
     unsigned int elevatorIterationsCount = 20u;

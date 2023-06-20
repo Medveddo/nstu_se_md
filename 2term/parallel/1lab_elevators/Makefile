@@ -1,5 +1,5 @@
 run:
-	g++ -o elevators.out -std=c++0x -pthread elevators.cpp person.cpp elevator.cpp floor.cpp && ./elevators.out
+	g++ -o main.out -std=c++0x -pthread main.cpp person.cpp elevator.cpp floor.cpp && ./main.out
 
 build:
-	g++ -o elevators.out -std=c++0x -pthread elevators.cpp person.cpp elevator.cpp floor.cpp
+	g++ -o main.out -std=c++0x -pthread main.cpp person.cpp elevator.cpp floor.cpp
