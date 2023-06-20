@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  dgmem:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
