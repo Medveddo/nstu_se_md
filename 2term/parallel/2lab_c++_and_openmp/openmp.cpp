@@ -47,7 +47,7 @@ int main(int argc, char const *argv[])
     auto endTime = std::chrono::steady_clock::now();
     const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime -
                                                             startTime).count();
-    std::cout << "(OMP) - Interval[" << intervalStart << ":" << intervalEnd << "] Found: "
+    std::cout << "(OMP) - Interval[" << intervalStart << ":" << intervalEnd << "]Len["<<targetLength<<"] Found: "
     << foundSequences << " sequences Took: " << duration << "[µs]"<< std::endl;
     return 0;
 }

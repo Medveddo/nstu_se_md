@@ -114,20 +114,20 @@ int main(int argc, char *argv[])
         MPI_Reduce(&mysum, &totalSum, 1, MPI_UNSIGNED, MPI_SUM, MASTER, MPI_COMM_WORLD);
     } /* end of non-master */
 
-    MPI_Barrier(MPI_COMM_WORLD); 
+    MPI_Barrier(MPI_COMM_WORLD);
     end = MPI_Wtime();
     MPI_Finalize();
     if (taskid == MASTER)
-    { 
+    {
         auto endTime = std::chrono::steady_clock::now();
         const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime -
                                                                                     startTime)
                                   .count();
-        std::cout << "(MPI_chrono::steady_clock) - Interval[" << gTaskParams.intervalStart << ":" << gTaskParams.intervalEnd << "] Found: "
+        std::cout << "(MPI_chrono::steady_clock) - Interval[" << gTaskParams.intervalStart << ":" << gTaskParams.intervalEnd << "]Len[" << gTaskParams.targetLength << "] Found: "
                   << totalSum << " sequences Took: " << duration << "[µs]" << std::endl;
 
-        std::cout << "(MPI_MPI_Wtime) - Interval[" << gTaskParams.intervalStart << ":" << gTaskParams.intervalEnd << "] Found: "
-                  << totalSum << " sequences Took: " << (end-start)*1000000 << "[µs]" << std::endl;
+        std::cout << "(MPI_MPI_Wtime) - Interval[" << gTaskParams.intervalStart << ":" << gTaskParams.intervalEnd << "]Len[" << gTaskParams.targetLength << "] Found: "
+                  << totalSum << " sequences Took: " << (end - start) * 1000000 << "[µs]" << std::endl;
     }
 }
 
@@ -158,7 +158,8 @@ unsigned int countSequencesWithLenTask(
  *
  * returns len of sequence
  */
-int getLenOfSquence(int input){
+int getLenOfSquence(int input)
+{
     int currentValue = input;
     int iterationsCount = 1;
     // -O2 and -O3 optimization flags never exit (currentValue > 0) while currentValue actualy below zero
@@ -172,6 +173,9 @@ int getLenOfSquence(int input){
         iterationsCount++;
         currentValue = currentValue % 2 == 0 ? currentValue / 2 : 3 * currentValue + 1;
     }
-    if (currentValue < 0) {return -1;}
+    if (currentValue < 0)
+    {
+        return -1;
+    }
     return iterationsCount;
 }
