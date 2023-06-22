@@ -29,8 +29,8 @@ int getLenOfSquence(int input){
 int main(int argc, char const *argv[])
 {
     unsigned int intervalStart = 1;
-    unsigned int intervalEnd = 250000;
-    unsigned int targetLength = 24;
+    unsigned int intervalEnd = 1000000;
+    unsigned int targetLength = 52;
 
     unsigned int foundSequences = 0;
 

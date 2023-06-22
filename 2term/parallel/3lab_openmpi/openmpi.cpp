@@ -25,8 +25,8 @@ int getLenOfSquence(int input);
 int main(int argc, char *argv[])
 {
     gTaskParams.intervalStart = 1;
-    gTaskParams.intervalEnd = 250000;
-    gTaskParams.targetLength = 24;
+    gTaskParams.intervalEnd = 1000000;
+    gTaskParams.targetLength = 52;
 
     int numtasks, taskid;
     unsigned int mysum;
