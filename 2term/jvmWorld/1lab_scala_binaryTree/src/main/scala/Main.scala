@@ -1,13 +1,12 @@
+import scalafx.Includes._
 import scalafx.application.JFXApp3
+import scalafx.collections.ObservableBuffer
 import scalafx.scene.Scene
-import scalafx.scene.control.{TreeItem, TreeView, Button}
-import scalafx.stage.Stage
+import scalafx.scene.control.{Button, ComboBox, TreeItem, TreeView}
 import scalafx.scene.layout.VBox
-import scalafx.scene.layout.Pane
-import scalafx.scene.canvas.{Canvas, GraphicsContext}
+
 import scala.math.BigDecimal.RoundingMode
-//import GeoCoordinate
-//import GeoCoordinateLatitudeComparator
+
 
 object ScalaFXBinaryTree extends JFXApp3 {
 
@@ -42,17 +41,32 @@ object ScalaFXBinaryTree extends JFXApp3 {
         }
         rootNode
       case None =>
-        return new TreeItem[String]("Empty Tree")
+        new TreeItem[String]("Empty Tree")
     }
   }
 
   override def start(): Unit = {
-    val tree = BinaryTree.fromList(Seq(
-      new GeoCoordinate(42.36, -15.06),
-      new GeoCoordinate(37.77, -10.42),
-      new GeoCoordinate(51.51, -26.13)
-    ))(new GeoCoordinateLatitudeComparator)
+    //    val tree = BinaryTree.fromList(Seq(
+    //      new Point(42.36, -15.06),
+    //      new Point(37.77, -10.42),
+    //      new Point(51.51, -26.13)
+    //    ))(new PointDistanceComparator)
+    //    val tree = BinaryTree.fromList(Seq())(new DefaultComparator)
+
+
+    // how to move BinaryTree[_] outside GUI layer ???
+    // SecretTurboLayer that accept:
+    // 1 - TYPE
+    // 2 - has actions
+    //     -- add element from string
+    //     -- rebalances tree
+    var tree: BinaryTree[_] = BinaryTree.fromList(Seq.empty[Int])(new DefaultComparator[Int])
+    var gselectedOption: String = "-"
     tree.prettyPrint()
+
+    // get options from builder
+
+
     var treeView: TreeView[String] = null
     val btree_root_node = tree.getParentNode()
 
@@ -64,12 +78,36 @@ object ScalaFXBinaryTree extends JFXApp3 {
     updateButton.onAction = _ => {
       // Perform the tree update here
       val r = scala.util.Random
-      tree.insert(new GeoCoordinate(
-        BigDecimal(r.nextDouble() * 200 - 100).setScale(2, RoundingMode.HALF_UP).toDouble,
-        BigDecimal(r.nextDouble() * 200 - 100).setScale(2, RoundingMode.HALF_UP).toDouble
-        //        r.nextDouble() * 200 - 100,
-        //        r.nextDouble() * 200 - 100
-      ))
+      if (gselectedOption == "-") {
+        tree.asInstanceOf[BinaryTree[Int]].insert(
+          r.nextInt()
+          //        new Point(
+          //        BigDecimal(r.nextDouble() * 200 - 100).setScale(2, RoundingMode.HALF_UP).toDouble,
+          //        BigDecimal(r.nextDouble() * 200 - 100).setScale(2, RoundingMode.HALF_UP).toDouble
+          //        //        r.nextDouble() * 200 - 100,
+          //        //        r.nextDouble() * 200 - 100
+          //      )
+        )
+      }
+      else if (gselectedOption == "2DPoint") {
+        tree.asInstanceOf[BinaryTree[Point]].insert(
+          new Point(
+            BigDecimal(r.nextDouble() * 200 - 100).setScale(2, RoundingMode.HALF_UP).toDouble,
+            BigDecimal(r.nextDouble() * 200 - 100).setScale(2, RoundingMode.HALF_UP).toDouble
+          )
+        )
+      }
+
+      else if (gselectedOption == "GeoCoordinate") {
+        tree.asInstanceOf[BinaryTree[GeoCoordinate]].insert(
+          new GeoCoordinate(
+            BigDecimal(r.nextDouble() * 200 - 100).setScale(2, RoundingMode.HALF_UP).toDouble,
+            BigDecimal(r.nextDouble() * 200 - 100).setScale(2, RoundingMode.HALF_UP).toDouble
+          )
+        )
+      }
+
+
       // Get the new root node for the tree
       val newRootNode = getTreeItemForBinaryTree(tree.getParentNode())
       tree.prettyPrint()
@@ -83,6 +121,27 @@ object ScalaFXBinaryTree extends JFXApp3 {
       treeView.root = newRootNode
     }
 
+    val options = ObservableBuffer("-", "GeoCoordinate", "2DPoint")
+    val select = new ComboBox[String](options)
+    select.value = "-"
+    select.onAction = () => {
+      val selectedOption = select.value.value
+      println(s"Selected: $selectedOption")
+      gselectedOption = selectedOption
+      if (selectedOption == "GeoCoordinate") {
+
+        tree = BinaryTree.fromList(Seq.empty[GeoCoordinate])(new GeoCoordinateLatitudeComparator)
+      }
+      else if (selectedOption == "2DPoint") {
+        tree = BinaryTree.fromList(Seq.empty[Point])(new PointDistanceComparator)
+      }
+      else if (selectedOption == "-") {
+        tree = BinaryTree.fromList(Seq.empty[Int])(new DefaultComparator[Int])
+      }
+      val newRootNode = getTreeItemForBinaryTree(tree.getParentNode())
+      treeView.root = newRootNode
+    }
+
     val container = new VBox()
     container.prefWidth = 600
 
@@ -91,10 +150,10 @@ object ScalaFXBinaryTree extends JFXApp3 {
     // todo load from file
     // todo add element (string -> GeoCord) + (string -> ...)
     // todo sort ???
-    container.children = Seq(treeView, updateButton, rebalanceButton)
+    container.children = Seq(treeView, updateButton, rebalanceButton, select)
 
     stage = new JFXApp3.PrimaryStage {
-      title = "Binary Tree Visualization"
+      title = "1lab_scala_binary_tree"
       scene = new Scene {
         content = container
       }

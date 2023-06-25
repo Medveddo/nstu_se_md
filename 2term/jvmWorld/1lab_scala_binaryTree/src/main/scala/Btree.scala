@@ -190,3 +190,29 @@ object BinaryTree {
     tree
   }
 }
+
+class DefaultComparator[T](implicit ordering: Ordering[T]) extends Ordering[T] {
+  override def compare(a: T, b: T): Int = {
+    if (a == b) {
+      0
+    }
+    else if (a > b) {
+      1
+    }
+    else {
+      -1
+    }
+  }
+
+  override def equiv(x: T, y: T): Boolean = {
+    ordering.compare(x, y) == 0
+  }
+
+  override def lt(x: T, y: T): Boolean = {
+    ordering.compare(x, y) == -1
+  }
+
+  override def gt(x: T, y: T): Boolean = {
+    ordering.compare(x, y) == 1
+  }
+}
