@@ -121,7 +121,7 @@ class BinaryTreeApp : Application() {
             loadFromFileButton
         )
 
-        primaryStage.title = "BinaryTreeApp"
+        primaryStage.title = "2lab_kotlin_btree"
         primaryStage.scene = Scene(container, 800.0, 700.0)
         primaryStage.show()
     }
