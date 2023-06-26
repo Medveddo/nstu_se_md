@@ -1,8 +1,32 @@
+import scala.util.Try
+
 class GeoCoordinate(val latitude: Double, val longitude: Double) {
   override def toString: String = {
     s"Lat: $latitude, Long: $longitude"
     //    s"Latitude: $latitude, Longitude: $longitude"
   }
+
+  def serializeToString: String = {
+    s"$latitude|$longitude"
+  }
+
+
+}
+
+object GeoCoordinate {
+  val strname = "GeoCoordinate"
+  def deserializeFromString(str: String): Option[GeoCoordinate] = {
+    str.split('|') match {
+      case Array(latStr, lonStr) => Try {
+        val latitude = latStr.toDouble
+        val longitude = lonStr.toDouble
+        Some(new GeoCoordinate(latitude, longitude))
+      }.getOrElse(None)
+      case _ => None
+    }
+  }
+
+//  def strname: String = "GeoCoordinate"
 }
 
 class GeoCoordinateLatitudeComparator extends Ordering[GeoCoordinate] {
