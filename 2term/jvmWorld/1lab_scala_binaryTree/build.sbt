@@ -18,6 +18,9 @@ libraryDependencies ++= {
     .map(m => "org.openjfx" % s"javafx-$m" % "16" classifier osName)
 }
 
+libraryDependencies += "com.lihaoyi" %% "ujson" % "1.2.2"
+
+
 lazy val root = (project in file("."))
   .settings(
     name := "1lab_scala_binaryTree"

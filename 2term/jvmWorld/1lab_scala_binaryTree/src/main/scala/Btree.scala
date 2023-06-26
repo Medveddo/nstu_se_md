@@ -150,6 +150,20 @@ class BinaryTree[T <: CustomTypeTrait] {
 
   def depthFirstIterator: Iterator[(T, String)] = new DepthFirstIterator(root)
 
+  def serialize(): String = {
+    s"""{"type": "${getType}", "root": ${serializeNode(root)}}"""
+  }
+
+  private def serializeNode(node: Option[Node[T]]): String = node match {
+    case Some(n) =>
+      s"""{"value": "${n.value.serializeToString}", "left": ${serializeNode(n.left)}, "right": ${serializeNode(n.right)}}"""
+    case None => "null"
+  }
+
+  private def getType: String = {
+    if (root.isDefined) root.get.value.typeName else ""
+  }
+
   private class DepthFirstIterator(private val rootNode: Option[Node[T]]) extends Iterator[(T, String)] {
     private val stack: scala.collection.mutable.Stack[(Option[Node[T]], String)] = scala.collection.mutable.Stack()
     private var nextValue: Option[(T, String)] = None
@@ -200,30 +214,23 @@ object BinaryTree {
     values.foreach(tree.insert)
     tree
   }
-}
 
-class DefaultComparator[T](implicit ordering: Ordering[T]) extends Ordering[T] {
-  override def compare(a: T, b: T): Int = {
-    if (a == b) {
-      0
-    }
-    else if (a > b) {
-      1
-    }
-    else {
-      -1
-    }
+  def fromJsonString[T <: CustomTypeTrait : Manifest](jsonString: String, factory: CustomTypeTrait): BinaryTree[T] = {
+    val tree = new BinaryTree[T]
+    val parsed = ujson.read(jsonString)
+    val rootNode = constructTree(parsed("root"), factory).asInstanceOf[Option[Node[T]]]
+    tree.root = rootNode
+    tree
   }
 
-  override def equiv(x: T, y: T): Boolean = {
-    ordering.compare(x, y) == 0
-  }
-
-  override def lt(x: T, y: T): Boolean = {
-    ordering.compare(x, y) == -1
-  }
-
-  override def gt(x: T, y: T): Boolean = {
-    ordering.compare(x, y) == 1
+  private def constructTree[T <: CustomTypeTrait : Manifest](node: ujson.Value, factory: CustomTypeTrait): Option[Node[CustomTypeTrait]] = {
+    if (node.isNull) {
+      None
+    } else {
+      val value = factory.deserializeFromString(node("value").str).get
+      val left = constructTree(node("left"), factory)
+      val right = constructTree(node("right"), factory)
+      Some(new Node[CustomTypeTrait](value, left, right))
+    }
   }
 }

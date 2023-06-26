@@ -7,9 +7,9 @@ import scalafx.scene.layout.VBox
 import scalafx.scene.text.Text
 
 
-object ScalaFXBinaryTree extends JFXApp3 {
+object Main extends JFXApp3 {
 
-  def getTreeItemForBinaryTree[T](node: Option[Node[T]], direction: String = ""): TreeItem[String] = {
+  private def getTreeItemForBinaryTree[T](node: Option[Node[T]], direction: String = ""): TreeItem[String] = {
     var rootNode: TreeItem[String] = null
     var leftNode: TreeItem[String] = null
     var rightNode: TreeItem[String] = null
@@ -44,23 +44,25 @@ object ScalaFXBinaryTree extends JFXApp3 {
   override def start(): Unit = {
     val treeProvider = new TreeProvider()
     val treeProviderOptionTypes = treeProvider.getAvailableTypes()
-
-    var gselectedOption: String = treeProviderOptionTypes.head
-    treeProvider.initializeWithEmptyTree(gselectedOption)
+    var selectedTypeOption: String = treeProviderOptionTypes.head
+    treeProvider.initializeWithEmptyTree(selectedTypeOption)
     var tree: BinaryTree[_] = treeProvider.getTree() match {
       case Some(actualTree) => actualTree
       case None => throw new NoSuchElementException("No BinaryTree available")
     }
 
-    tree.prettyPrint()
-
     var treeView: TreeView[String] = null
     treeView = new TreeView[String](getTreeItemForBinaryTree(tree.getParentNode()))
     treeView.showRoot = true
 
-    var elementRepresentationExample: Text = new Text(
+    val elementRepresentationExample: Text = new Text(
       treeProvider.getObjectStringRepresentationExample()
     )
+
+    val inputDataField: TextField = new TextField()
+    inputDataField.layoutX = 20
+    inputDataField.layoutY = 20
+    inputDataField.promptText = "Enter data string representation"
 
     val insertRandomButton = new Button("Insert Random")
     val rebalanceButton = new Button("Rebalance")
@@ -71,15 +73,8 @@ object ScalaFXBinaryTree extends JFXApp3 {
     insertRandomButton.onAction = _ => {
       treeProvider.insertRandomValue()
       val newRootNode = getTreeItemForBinaryTree(tree.getParentNode())
-      tree.prettyPrint()
       treeView.root = newRootNode
     }
-
-    val inputDataField: TextField = new TextField()
-    inputDataField.layoutX = 20
-    inputDataField.layoutY = 20
-    inputDataField.promptText = "Enter data string representation"
-
     rebalanceButton.onAction = _ => {
       tree.rebalance()
       val newRootNode = getTreeItemForBinaryTree(tree.getParentNode())
@@ -87,42 +82,28 @@ object ScalaFXBinaryTree extends JFXApp3 {
     }
     addElementButton.onAction = _ => {
       val inputValue: String = inputDataField.text.value
-      treeProvider.insertValue(gselectedOption, inputValue)
+      treeProvider.insertValue(selectedTypeOption, inputValue)
       val newRootNode = getTreeItemForBinaryTree(tree.getParentNode())
-      tree.prettyPrint()
       treeView.root = newRootNode
     }
 
-    val options = ObservableBuffer(treeProviderOptionTypes: _*)
-    val select = new ComboBox[String](options)
+    val selectOptions = ObservableBuffer(treeProviderOptionTypes: _*)
+    val select = new ComboBox[String](selectOptions)
     select.value = treeProviderOptionTypes.head
-
     select.onAction = () => {
-      val selectedOption = select.value.value
-      println(s"Selected: $selectedOption")
-      gselectedOption = selectedOption
-      treeProvider.initializeWithEmptyTree(gselectedOption)
+      selectedTypeOption = select.value.value
+      treeProvider.initializeWithEmptyTree(selectedTypeOption)
       tree = treeProvider.getTree() match {
         case Some(actualTree) => actualTree
         case None => throw new NoSuchElementException("No BinaryTree available")
       }
-
       val newRootNode = getTreeItemForBinaryTree(tree.getParentNode())
       treeView.root = newRootNode
-
       elementRepresentationExample.text = treeProvider.getObjectStringRepresentationExample()
     }
 
     val container = new VBox()
     container.prefWidth = 600
-
-
-
-    // todo try put pretty print to GUI instead of tree view
-    // todo save to file button
-    // todo load from file
-    // todo add element (string -> GeoCord) + (string -> ...)
-    // todo sort ???
     container.children = Seq(
       treeView,
       insertRandomButton,
