@@ -184,14 +184,14 @@ class BinaryTree<T : CustomTypeTrait> {
             return tree
         }
 
-        private fun <T : CustomTypeTrait> constructTree(node: JsonValue, factory: CustomTypeTrait): Node<T>? {
+        private fun <T : CustomTypeTrait> constructTree(node: JsonValue, factory: T): Node<T>? {
             if (node is JsonNull) {
                 return null
             } else {
                 val nodeObj = node as JsonObject
-                val value = factory.deserializeFromString(nodeObj["value"].cast<String>()) as T
-                val left = constructTree(nodeObj["left"], factory) as Node<T>?
-                val right = constructTree(nodeObj["right"], factory) as Node<T>?
+                val value = factory.deserializeFromString(nodeObj["value"].cast<String>()) as T? ?: return null
+                val left = constructTree(nodeObj["left"], factory)
+                val right = constructTree(nodeObj["right"], factory)
                 return Node(value, left, right)
             }
         }

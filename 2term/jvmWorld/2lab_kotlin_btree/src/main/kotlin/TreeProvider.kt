@@ -52,7 +52,7 @@ class TreeProvider {
         val parsedType: String = JsonKraken.deserialize<JsonValue>(s)["type"].cast<String>()
         val deserializer = deserializers[parsedType]
             ?: throw IllegalArgumentException("Unsupported type: $parsedType")
-//        tree = BinaryTree.fromJsonString(s, deserializer)
+        tree = BinaryTree.fromJsonString(s, deserializer)
         currentType = parsedType
         return parsedType
     }

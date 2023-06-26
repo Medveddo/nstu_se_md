@@ -19,14 +19,18 @@
 fun main(args: Array<String>) {
 //    Application.launch(HelloWorldApp::class.java)
 
+//    val provider = TreeProvider()
+//    val type = provider.getAvailableTypes()[0]
+//    provider.initializeWithEmptyTree(type)
+//    provider.insertValue(type, "16.78|9.0")
+//    provider.insertValue(type, "16.78|9.0")
+//    provider.insertValue(type, "16.78|9.0")
+//    provider.insertValue(type, "16.78|9.0")
+//    provider.getTree()?.prettyPrint()
+//    provider.getTree()?.rebalance()
+//    provider.getTree()?.prettyPrint()
+//    println(provider.getTree()?.serialize())
     val provider = TreeProvider()
-    val type = provider.getAvailableTypes()[0]
-    provider.initializeWithEmptyTree(type)
-    provider.insertValue(type, "16.78|9.0")
-    provider.insertValue(type, "16.78|9.0")
-    provider.insertValue(type, "16.78|9.0")
-    provider.insertValue(type, "16.78|9.0")
-    provider.getTree()?.prettyPrint()
-    provider.getTree()?.rebalance()
+    provider.setTreeFromStringRepresentation("""{"type": "GeoCoordinate", "root": {"value": "16.78|9.0", "left": {"value": "16.78|9.0", "left": {"value": "16.78|9.0", "left": null, "right": null}, "right": null}, "right": {"value": "16.78|9.0", "left": null, "right": null}}}""")
     provider.getTree()?.prettyPrint()
 }
