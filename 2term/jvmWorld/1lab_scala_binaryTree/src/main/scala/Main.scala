@@ -109,8 +109,10 @@ object Main extends JFXApp3 {
 
     val fileChooser = new FileChooser()
     fileChooser.initialDirectory = new java.io.File("C:\\Users\\Vitaly\\Workspace\\StudyNSTU\\nstu_se_md\\2term\\jvmWorld\\1lab_scala_binaryTree")
-    val extensionFilter = new ExtensionFilter("Text Files", "*.txt")
-    fileChooser.extensionFilters.add(extensionFilter)
+    val extensionFilterTxt = new ExtensionFilter("Text Files", "*.txt")
+    val extensionFilterJson = new ExtensionFilter("JSON Files", "*.json")
+    fileChooser.extensionFilters.add(extensionFilterJson)
+    fileChooser.extensionFilters.add(extensionFilterTxt)
 
     saveToFileButton.onAction = _ => {
       val selectedFile = fileChooser.showSaveDialog(stage)
@@ -141,8 +143,15 @@ object Main extends JFXApp3 {
           println(s"Failed to load file: $filePath")
           ""
         }
+        treeProvider.setTreeFromStringRepresentation(content)
+        tree = treeProvider.getTree() match {
+          case Some(actualTree) => actualTree
+          case None => throw new NoSuchElementException("No BinaryTree available")
+        }
+        val newRootNode = getTreeItemForBinaryTree(tree.getParentNode())
+        treeView.root = newRootNode
+        elementRepresentationExample.text = treeProvider.getObjectStringRepresentationExample()
 
-        println(content)
       }
     }
 
