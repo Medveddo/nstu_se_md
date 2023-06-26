@@ -27,7 +27,7 @@ class GeoCoordinate(val latitude: Double, val longitude: Double) extends CustomT
           val latitude = latStr.toDouble
           val longitude = lonStr.toDouble
           val instance = new GeoCoordinate(latitude, longitude)
-          Some(instance.asInstanceOf[this.type]) // cast here
+          Some(instance.asInstanceOf[this.type])
         } catch {
           case _: NumberFormatException => None
         }
