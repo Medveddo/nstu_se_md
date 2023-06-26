@@ -5,6 +5,11 @@ import scalafx.scene.Scene
 import scalafx.scene.control.{Button, ComboBox, TextField, TreeItem, TreeView}
 import scalafx.scene.layout.VBox
 import scalafx.scene.text.Text
+import scalafx.stage.FileChooser
+import scalafx.stage.FileChooser.ExtensionFilter
+
+import scala.io.Source
+import scala.util.Try
 
 
 object Main extends JFXApp3 {
@@ -102,6 +107,45 @@ object Main extends JFXApp3 {
       elementRepresentationExample.text = treeProvider.getObjectStringRepresentationExample()
     }
 
+    val fileChooser = new FileChooser()
+    fileChooser.initialDirectory = new java.io.File("C:\\Users\\Vitaly\\Workspace\\StudyNSTU\\nstu_se_md\\2term\\jvmWorld\\1lab_scala_binaryTree")
+    val extensionFilter = new ExtensionFilter("Text Files", "*.txt")
+    fileChooser.extensionFilters.add(extensionFilter)
+
+    saveToFileButton.onAction = _ => {
+      val selectedFile = fileChooser.showSaveDialog(stage)
+      if (selectedFile != null) {
+        val filePath = selectedFile.getAbsolutePath
+        val data = treeProvider.getTreeStringRepresentation()
+        data match {
+          case Some(string_data) =>
+            val writer = new java.io.PrintWriter(filePath)
+            writer.write(string_data)
+            writer.close()
+          case None =>
+        }
+      }
+    }
+
+    loadFromFileButton.onAction = _ => {
+      val selectedFile = fileChooser.showOpenDialog(stage)
+      if (selectedFile != null) {
+        val filePath = selectedFile.getAbsolutePath
+        val content = Try(Source.fromFile(filePath)).flatMap { source =>
+          Try(source.mkString).map { content =>
+            source.close()
+            content
+          }
+        }.getOrElse {
+          // Handle any errors during file loading
+          println(s"Failed to load file: $filePath")
+          ""
+        }
+
+        println(content)
+      }
+    }
+
     val container = new VBox()
     container.prefWidth = 600
     container.children = Seq(
@@ -112,6 +156,8 @@ object Main extends JFXApp3 {
       elementRepresentationExample,
       inputDataField,
       addElementButton,
+      saveToFileButton,
+      loadFromFileButton
     )
 
     stage = new JFXApp3.PrimaryStage {
@@ -120,7 +166,7 @@ object Main extends JFXApp3 {
         content = container
       }
       width = 800
-      height = 600
+      height = 700
     }
   }
 }

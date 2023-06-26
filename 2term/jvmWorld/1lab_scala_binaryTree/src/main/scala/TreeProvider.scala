@@ -53,6 +53,21 @@ class TreeProvider(var tree: Option[BinaryTree[CustomTypeTrait]] = None) {
     currentType = typeName
   }
 
+  def getTreeStringRepresentation(): Option[String] = {
+    tree match {
+      case Some(actualTree) => Some(actualTree.serialize())
+      case None => None
+    }
+  }
+
+  def setTreeFromStringRepresentation(s: String) = {
+    val parsed_type = ujson.read(s)("type").str
+    deserializers.get(parsed_type) match {
+      case Some(deserializer) =>
+        tree = BinaryTree.fromJsonString(s, deserializer)
+      case None => throw new IllegalArgumentException(s"Unsupported type: $parsed_type")
+    }
+  }
 
   def getTree(): Option[BinaryTree[CustomTypeTrait]] = tree
 }
