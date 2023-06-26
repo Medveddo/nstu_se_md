@@ -1,11 +1,14 @@
 import net.jemzart.jsonkraken.JsonKraken
-import net.jemzart.jsonkraken.JsonArray
 import net.jemzart.jsonkraken.JsonObject
 import net.jemzart.jsonkraken.JsonValue
 import net.jemzart.jsonkraken.JsonNull
 
 class BinaryTree<T : CustomTypeTrait> {
     private var root: Node<T>? = null
+
+    fun getParentNode(): Node<T>? {
+        return root
+    }
 
     fun insert(value: T) {
         root = insertNode(root, value)

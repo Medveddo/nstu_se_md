@@ -1,36 +1,132 @@
-//import javafx.application.Application
-//import javafx.scene.Scene
-//import javafx.scene.control.Label
-//import javafx.scene.layout.StackPane
-//import javafx.stage.Stage
-//
-//class HelloWorldApp : Application() {
-//    override fun start(primaryStage: Stage) {
-//        val message = "Hello World!"
-//        val label = Label(message)
-//        val root = StackPane(label)
-//        val scene = Scene(root, 300.0, 200.0)
-//        primaryStage.title = "Hello World GUI"
-//        primaryStage.scene = scene
-//        primaryStage.show()
-//    }
-//}
+import javafx.application.Application
+import javafx.collections.FXCollections
+import javafx.scene.Scene
+import javafx.scene.control.*
+import javafx.scene.layout.VBox
+import javafx.stage.FileChooser
+import javafx.stage.Stage
+import java.io.File
+import java.io.PrintWriter
 
-fun main(args: Array<String>) {
-//    Application.launch(HelloWorldApp::class.java)
 
-//    val provider = TreeProvider()
-//    val type = provider.getAvailableTypes()[0]
-//    provider.initializeWithEmptyTree(type)
-//    provider.insertValue(type, "16.78|9.0")
-//    provider.insertValue(type, "16.78|9.0")
-//    provider.insertValue(type, "16.78|9.0")
-//    provider.insertValue(type, "16.78|9.0")
-//    provider.getTree()?.prettyPrint()
-//    provider.getTree()?.rebalance()
-//    provider.getTree()?.prettyPrint()
-//    println(provider.getTree()?.serialize())
-    val provider = TreeProvider()
-    provider.setTreeFromStringRepresentation("""{"type": "GeoCoordinate", "root": {"value": "16.78|9.0", "left": {"value": "16.78|9.0", "left": {"value": "16.78|9.0", "left": null, "right": null}, "right": null}, "right": {"value": "16.78|9.0", "left": null, "right": null}}}""")
-    provider.getTree()?.prettyPrint()
+class BinaryTreeApp : Application() {
+
+    private fun getTreeItemForBinaryTree(node: Node<*>?, direction: String = ""): TreeItem<String> {
+        return if (node != null) {
+            val rootNode = TreeItem<String>("$direction${node.value}")
+            val leftNode = getTreeItemForBinaryTree(node.left, "L\t")
+            val rightNode = getTreeItemForBinaryTree(node.right, "R\t")
+
+            rootNode.children.addAll(leftNode, rightNode)
+            rootNode.isExpanded = true
+            rootNode
+        } else {
+            TreeItem("Empty leaf")
+        }
+    }
+
+    override fun start(primaryStage: Stage) {
+        val treeProvider = TreeProvider()
+        val treeProviderOptionTypes = treeProvider.getAvailableTypes()
+        var selectedTypeOption = treeProviderOptionTypes.first()
+        treeProvider.initializeWithEmptyTree(selectedTypeOption)
+
+        var tree = treeProvider.getTree() ?: throw NoSuchElementException("No BinaryTree available")
+
+        var treeView = TreeView<String>(getTreeItemForBinaryTree(tree.getParentNode()))
+        treeView.isShowRoot = true
+
+        val elementRepresentationExample = Label(treeProvider.getObjectStringRepresentationExample())
+
+        val inputDataField = TextField()
+        inputDataField.promptText = "Enter data string representation"
+
+        val insertRandomButton = Button("Insert Random")
+        val rebalanceButton = Button("Rebalance")
+        val addElementButton = Button("Add Element")
+        val saveToFileButton = Button("Save to file")
+        val loadFromFileButton = Button("Load from file")
+
+        insertRandomButton.setOnAction {
+            treeProvider.insertRandomValue()
+            treeView.root = getTreeItemForBinaryTree(tree.getParentNode())
+        }
+
+        rebalanceButton.setOnAction {
+            tree.rebalance()
+            treeView.root = getTreeItemForBinaryTree(tree.getParentNode())
+        }
+
+        addElementButton.setOnAction {
+            val inputValue = inputDataField.text
+            treeProvider.insertValue(selectedTypeOption, inputValue)
+            treeView.root = getTreeItemForBinaryTree(tree.getParentNode())
+        }
+
+        val selectOptions = FXCollections.observableArrayList(treeProviderOptionTypes)
+        val select = ComboBox<String>(selectOptions)
+        select.value = treeProviderOptionTypes.first()
+        select.setOnAction {
+            selectedTypeOption = select.value
+            treeProvider.initializeWithEmptyTree(selectedTypeOption)
+            tree = treeProvider.getTree() ?: throw NoSuchElementException("No BinaryTree available")
+            treeView.root = getTreeItemForBinaryTree(tree.getParentNode())
+            elementRepresentationExample.text = treeProvider.getObjectStringRepresentationExample()
+        }
+
+        val fileChooser = FileChooser()
+        fileChooser.initialDirectory = File("C:\\Users\\Vitaly\\Workspace\\StudyNSTU\\nstu_se_md\\2term\\jvmWorld\\2lab_kotlin_btree")
+        fileChooser.extensionFilters.addAll(
+            FileChooser.ExtensionFilter("JSON Files", "*.json"),
+            FileChooser.ExtensionFilter("Text Files", "*.txt")
+        )
+
+        saveToFileButton.setOnAction {
+            val selectedFile = fileChooser.showSaveDialog(primaryStage)
+            selectedFile?.let {
+                val filePath = it.absolutePath
+                val data = treeProvider.getTreeStringRepresentation()
+                data?.let { stringData ->
+                    PrintWriter(filePath).use { writer ->
+                        writer.write(stringData)
+                    }
+                }
+            }
+        }
+
+        loadFromFileButton.setOnAction {
+            val selectedFile = fileChooser.showOpenDialog(primaryStage)
+            selectedFile?.let {
+                val filePath = it.absolutePath
+                val content = File(filePath).readText()
+                selectedTypeOption = treeProvider.setTreeFromStringRepresentation(content)
+                tree = treeProvider.getTree() ?: throw NoSuchElementException("No BinaryTree available")
+                treeView.root = getTreeItemForBinaryTree(tree.getParentNode())
+                elementRepresentationExample.text = treeProvider.getObjectStringRepresentationExample()
+                select.value = selectedTypeOption
+            }
+        }
+
+        val container = VBox()
+        container.prefWidth = 600.0
+        container.children.addAll(
+            treeView,
+            insertRandomButton,
+            rebalanceButton,
+            select,
+            elementRepresentationExample,
+            inputDataField,
+            addElementButton,
+            saveToFileButton,
+            loadFromFileButton
+        )
+
+        primaryStage.title = "BinaryTreeApp"
+        primaryStage.scene = Scene(container, 800.0, 700.0)
+        primaryStage.show()
+    }
+}
+
+fun main() {
+    Application.launch(BinaryTreeApp::class.java)
 }
