@@ -5,7 +5,7 @@ import scala.util.{Random, Try}
 
 class Point2D(val x: Double, val y: Double) extends CustomTypeTrait {
 
-  override def typeName: String = "2DPoint"
+  override def typeName: String = "Point2D"
 
   override def typeExampleRepresentation: String = "0.5|7.8"
 

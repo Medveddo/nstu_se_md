@@ -139,11 +139,10 @@ object Main extends JFXApp3 {
             content
           }
         }.getOrElse {
-          // Handle any errors during file loading
           println(s"Failed to load file: $filePath")
           ""
         }
-        treeProvider.setTreeFromStringRepresentation(content)
+        selectedTypeOption = treeProvider.setTreeFromStringRepresentation(content)
         tree = treeProvider.getTree() match {
           case Some(actualTree) => actualTree
           case None => throw new NoSuchElementException("No BinaryTree available")

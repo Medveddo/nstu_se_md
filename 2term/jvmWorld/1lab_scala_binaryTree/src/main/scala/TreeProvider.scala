@@ -1,8 +1,9 @@
 
-class TreeProvider(var tree: Option[BinaryTree[CustomTypeTrait]] = None) {
+class TreeProvider {
+  private var tree: Option[BinaryTree[CustomTypeTrait]] = None
   private val deserializers: Map[String, CustomTypeTrait] = Map(
-    "GeoCoordinate" -> new GeoCoordinate(0, 0),
-    "Point2D" -> new Point2D(0, 0)
+    new GeoCoordinate(0, 0).typeName -> new GeoCoordinate(0, 0),
+    new Point2D(0, 0).typeName -> new Point2D(0, 0)
   )
   private var currentType: String = ""
 
@@ -60,7 +61,7 @@ class TreeProvider(var tree: Option[BinaryTree[CustomTypeTrait]] = None) {
     }
   }
 
-  def setTreeFromStringRepresentation(s: String) = {
+  def setTreeFromStringRepresentation(s: String): String = {
     val parsed_type = ujson.read(s)("type").str
     deserializers.get(parsed_type) match {
       case Some(deserializer) =>
@@ -68,6 +69,7 @@ class TreeProvider(var tree: Option[BinaryTree[CustomTypeTrait]] = None) {
       case None => throw new IllegalArgumentException(s"Unsupported type: $parsed_type")
     }
     currentType = parsed_type
+    parsed_type
   }
 
   def getTree(): Option[BinaryTree[CustomTypeTrait]] = tree
