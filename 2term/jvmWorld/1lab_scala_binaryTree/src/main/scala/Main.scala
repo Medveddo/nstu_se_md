@@ -45,12 +45,12 @@ object ScalaFXBinaryTree extends JFXApp3 {
     val treeProvider = new TreeProvider()
     val treeProviderOptionTypes = treeProvider.getAvailableTypes()
 
-    treeProvider.initializeWithEmptyTree()
+    var gselectedOption: String = treeProviderOptionTypes.head
+    treeProvider.initializeWithEmptyTree(gselectedOption)
     var tree: BinaryTree[_] = treeProvider.getTree() match {
       case Some(actualTree) => actualTree
       case None => throw new NoSuchElementException("No BinaryTree available")
     }
-    var gselectedOption: String = treeProviderOptionTypes.head
 
     tree.prettyPrint()
 
@@ -69,7 +69,7 @@ object ScalaFXBinaryTree extends JFXApp3 {
     val loadFromFileButton = new Button("Load from file")
 
     insertRandomButton.onAction = _ => {
-      treeProvider.insertRandomValue(gselectedOption)
+      treeProvider.insertRandomValue()
       val newRootNode = getTreeItemForBinaryTree(tree.getParentNode())
       tree.prettyPrint()
       treeView.root = newRootNode

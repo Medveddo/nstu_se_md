@@ -1,82 +1,45 @@
-import scala.util.Try
+import scala.math.BigDecimal.RoundingMode
 
-class GeoCoordinate(val latitude: Double, val longitude: Double) {
+class GeoCoordinate(val latitude: Double, val longitude: Double) extends CustomTypeTrait {
+  override def typeName: String = "GeoCoordinate"
+
+  override def typeExampleRepresentation: String = "1.5|2.8"
+
+  override def createRandomInstance(): this.type = {
+    val r = scala.util.Random
+    val latitude = BigDecimal(r.nextDouble() * 200 - 100).setScale(2, RoundingMode.HALF_UP).toDouble
+    val longitude = BigDecimal(r.nextDouble() * 200 - 100).setScale(2, RoundingMode.HALF_UP).toDouble
+    new GeoCoordinate(latitude, longitude).asInstanceOf[this.type]
+  }
+
   override def toString: String = {
     s"Lat: $latitude, Long: $longitude"
-    //    s"Latitude: $latitude, Longitude: $longitude"
   }
 
-  def serializeToString: String = {
+  override def serializeToString: String = {
     s"$latitude|$longitude"
   }
-}
 
-object GeoCoordinate {
-  val strname = "GeoCoordinate"
-  val strreprexample = "1.5|2.8"
-
-  def deserializeFromString(str: String): Option[GeoCoordinate] = {
+  override def deserializeFromString(str: String): Option[this.type] = {
     str.split('|') match {
-      case Array(latStr, lonStr) => Try {
-        val latitude = latStr.toDouble
-        val longitude = lonStr.toDouble
-        Some(new GeoCoordinate(latitude, longitude))
-      }.getOrElse(None)
+      case Array(latStr, lonStr) =>
+        try {
+          val latitude = latStr.toDouble
+          val longitude = lonStr.toDouble
+          val instance = new GeoCoordinate(latitude, longitude)
+          Some(instance.asInstanceOf[this.type]) // cast here
+        } catch {
+          case _: NumberFormatException => None
+        }
       case _ => None
     }
   }
 
-//  def strname: String = "GeoCoordinate"
-}
-
-class GeoCoordinateLatitudeComparator extends Ordering[GeoCoordinate] {
-  override def compare(a: GeoCoordinate, b: GeoCoordinate): Int = {
-    if (a.latitude == b.latitude) {
-      0
-    }
-    else if (a.latitude > b.latitude) {
-      1
-    }
-    else {
-      -1
-    }
-  }
-
-  override def equiv(x: GeoCoordinate, y: GeoCoordinate): Boolean = {
-    compare(x, y) == 0
-  }
-
-  override def lt(x: GeoCoordinate, y: GeoCoordinate): Boolean = {
-    compare(x, y) == -1
-  }
-
-  override def gt(x: GeoCoordinate, y: GeoCoordinate): Boolean = {
-    compare(x, y) == 1
-  }
-}
-
-class GeoCoordinateLongitudeComparator extends Ordering[GeoCoordinate] {
-  override def compare(a: GeoCoordinate, b: GeoCoordinate): Int = {
-    if (a.longitude == b.longitude) {
-      0
-    }
-    else if (a.longitude > b.longitude) {
-      1
-    }
-    else {
-      -1
-    }
-  }
-
-  override def equiv(x: GeoCoordinate, y: GeoCoordinate): Boolean = {
-    compare(x, y) == 0
-  }
-
-  override def lt(x: GeoCoordinate, y: GeoCoordinate): Boolean = {
-    compare(x, y) == -1
-  }
-
-  override def gt(x: GeoCoordinate, y: GeoCoordinate): Boolean = {
-    compare(x, y) == 1
+  override def compare(other: CustomTypeTrait): Int = other match {
+    case geo: GeoCoordinate =>
+      if (latitude < geo.latitude) -1
+      else if (latitude > geo.latitude) 1
+      else 0
+    case _ => throw new IllegalArgumentException("Cannot compare GeoCoordinate with a different type")
   }
 }

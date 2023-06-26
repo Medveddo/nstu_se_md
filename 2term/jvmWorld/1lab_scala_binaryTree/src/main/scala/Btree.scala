@@ -2,9 +2,8 @@ import scala.collection.immutable.Seq
 
 class Node[T](var value: T, var left: Option[Node[T]], var right: Option[Node[T]])
 
-class BinaryTree[T](implicit ordering: Ordering[T]) {
+class BinaryTree[T <: CustomTypeTrait] {
   private var root: Option[Node[T]] = None
-
   def insert(value: T): Unit = {
     root = insertNode(root, value)
   }
@@ -12,7 +11,7 @@ class BinaryTree[T](implicit ordering: Ordering[T]) {
   private def insertNode(current: Option[Node[T]], value: T): Option[Node[T]] = current match {
     case None => Some(new Node(value, None, None))
     case Some(node) =>
-      if (ordering.lt(value, node.value)) {
+      if (value.compare(node.value) < 0) {
         node.left = insertNode(node.left, value)
       } else {
         node.right = insertNode(node.right, value)
@@ -27,9 +26,9 @@ class BinaryTree[T](implicit ordering: Ordering[T]) {
   private def deleteNode(current: Option[Node[T]], value: T): Option[Node[T]] = current match {
     case None => None
     case Some(node) =>
-      if (ordering.lt(value, node.value)) {
+      if (value.compare(node.value) < 0) {
         node.left = deleteNode(node.left, value)
-      } else if (ordering.gt(value, node.value)) {
+      } else if (value.compare(node.value) > 0) {
         node.right = deleteNode(node.right, value)
       } else {
         (node.left, node.right) match {
@@ -139,9 +138,9 @@ class BinaryTree[T](implicit ordering: Ordering[T]) {
   private def findByValueNode(current: Option[Node[T]], value: T, currentIndex: Int): Int = current match {
     case Some(node) =>
       val leftSubtreeCount = countNodes(node.left)
-      if (ordering.equiv(value, node.value)) {
+      if (value.compare(node.value) == 0) {
         currentIndex + leftSubtreeCount
-      } else if (ordering.lt(value, node.value)) {
+      } else if (value.compare(node.value) < 0) {
         findByValueNode(node.left, value, currentIndex)
       } else {
         findByValueNode(node.right, value, currentIndex + leftSubtreeCount + 1)
@@ -196,7 +195,7 @@ class BinaryTree[T](implicit ordering: Ordering[T]) {
 
 
 object BinaryTree {
-  def fromList[T](values: Seq[T])(implicit ordering: Ordering[T]): BinaryTree[T] = {
+  def fromList[T <: CustomTypeTrait](values: Seq[T]): BinaryTree[T] = {
     val tree = new BinaryTree[T]
     values.foreach(tree.insert)
     tree
