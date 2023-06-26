@@ -1,3 +1,5 @@
+import net.jemzart.jsonkraken.JsonKraken
+import net.jemzart.jsonkraken.JsonValue
 
 class TreeProvider {
     private var tree: BinaryTree<CustomTypeTrait>? = null
@@ -46,14 +48,14 @@ class TreeProvider {
         return tree?.serialize()
     }
 
-//    fun setTreeFromStringRepresentation(s: String): String {
-//        val parsedType = Json.plain.parseJson(s).jsonObject["type"]!!.content
-//        val deserializer = deserializers[parsedType]
-//            ?: throw IllegalArgumentException("Unsupported type: $parsedType")
+    fun setTreeFromStringRepresentation(s: String): String {
+        val parsedType: String = JsonKraken.deserialize<JsonValue>(s)["type"].cast<String>()
+        val deserializer = deserializers[parsedType]
+            ?: throw IllegalArgumentException("Unsupported type: $parsedType")
 //        tree = BinaryTree.fromJsonString(s, deserializer)
-//        currentType = parsedType
-//        return parsedType
-//    }
+        currentType = parsedType
+        return parsedType
+    }
 
     fun getTree(): BinaryTree<CustomTypeTrait>? {
         return tree

@@ -1,3 +1,9 @@
+import net.jemzart.jsonkraken.JsonKraken
+import net.jemzart.jsonkraken.JsonArray
+import net.jemzart.jsonkraken.JsonObject
+import net.jemzart.jsonkraken.JsonValue
+import net.jemzart.jsonkraken.JsonNull
+
 class BinaryTree<T : CustomTypeTrait> {
     private var root: Node<T>? = null
 
@@ -168,6 +174,26 @@ class BinaryTree<T : CustomTypeTrait> {
             val tree = BinaryTree<T>()
             values.forEach { tree.insert(it) }
             return tree
+        }
+
+        fun <T : CustomTypeTrait> fromJsonString(jsonString: String, factory: CustomTypeTrait): BinaryTree<T> {
+            val tree = BinaryTree<T>()
+            val parsed = JsonKraken.deserialize(jsonString) as JsonObject
+            val rootNode = constructTree(parsed["root"], factory) as Node<T>?
+            tree.root = rootNode
+            return tree
+        }
+
+        private fun <T : CustomTypeTrait> constructTree(node: JsonValue, factory: CustomTypeTrait): Node<T>? {
+            if (node is JsonNull) {
+                return null
+            } else {
+                val nodeObj = node as JsonObject
+                val value = factory.deserializeFromString(nodeObj["value"].cast<String>()) as T
+                val left = constructTree(nodeObj["left"], factory) as Node<T>?
+                val right = constructTree(nodeObj["right"], factory) as Node<T>?
+                return Node(value, left, right)
+            }
         }
     }
 }
