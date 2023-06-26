@@ -19,10 +19,14 @@
 fun main(args: Array<String>) {
 //    Application.launch(HelloWorldApp::class.java)
 
-    val values = listOf(GeoCoordinate(0.0,0.0), GeoCoordinate(1.0,0.0),
-        GeoCoordinate(-1.0,0.0))
-    val tree = BinaryTree.fromList(values)
-    tree.prettyPrint()
-    val newValue: GeoCoordinate = GeoCoordinate(2.0, -3.0)
-    tree.insert(newValue)
+    val provider = TreeProvider()
+    val type = provider.getAvailableTypes()[0]
+    provider.initializeWithEmptyTree(type)
+    provider.insertValue(type, "16.78|9.0")
+    provider.insertValue(type, "16.78|9.0")
+    provider.insertValue(type, "16.78|9.0")
+    provider.insertValue(type, "16.78|9.0")
+    provider.getTree()?.prettyPrint()
+    provider.getTree()?.rebalance()
+    provider.getTree()?.prettyPrint()
 }
