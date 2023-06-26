@@ -1,6 +1,5 @@
 import scala.math.BigDecimal.RoundingMode
 
-
 object DefaultTypeAliases {
   val IntTypeStrName = "Int"
 }
@@ -12,9 +11,9 @@ class TreeProvider(var tree: Option[BinaryTree[_]] = None, var treeObjectType: S
 
   def getObjectStringRepresentationExample(): String = {
     treeObjectType match {
-      case GeoCoordinate.strname => "1.5|2.8"
-      case Point.strname => "0.5|7.8"
-      case DefaultTypeAliases.IntTypeStrName => "12"
+      case GeoCoordinate.strname => GeoCoordinate.strreprexample
+      case Point.strname => Point.strreprexample
+      case DefaultTypeAliases.IntTypeStrName => "42"
       case _ => "Unknown type"
     }
   }
@@ -63,10 +62,8 @@ class TreeProvider(var tree: Option[BinaryTree[_]] = None, var treeObjectType: S
       case Some(actualTree) => actualTree
       case None => return
     }
-    val r = scala.util.Random
     objectType match {
       case DefaultTypeAliases.IntTypeStrName =>
-
         def parseInt(str: String): Option[Int] = {
           try {
             Some(str.toInt)
@@ -75,7 +72,6 @@ class TreeProvider(var tree: Option[BinaryTree[_]] = None, var treeObjectType: S
           }
         }
         val intValue = parseInt(insertedValue)
-
         intValue match {
           case Some(realIntValue) => realTree.asInstanceOf[BinaryTree[Int]].insert(realIntValue)
           case None => println("Failed to parse integer")
@@ -95,8 +91,6 @@ class TreeProvider(var tree: Option[BinaryTree[_]] = None, var treeObjectType: S
     }
   }
 
-  def getTree(): Option[BinaryTree[_]] = {
-    tree
-  }
+  def getTree(): Option[BinaryTree[_]] = tree
 }
 

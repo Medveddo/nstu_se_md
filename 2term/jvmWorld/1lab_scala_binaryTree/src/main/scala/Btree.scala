@@ -27,9 +27,9 @@ class BinaryTree[T](implicit ordering: Ordering[T]) {
   private def deleteNode(current: Option[Node[T]], value: T): Option[Node[T]] = current match {
     case None => None
     case Some(node) =>
-      if (ordering.lt(value,node.value)) {
+      if (ordering.lt(value, node.value)) {
         node.left = deleteNode(node.left, value)
-      } else if (ordering.gt(value,node.value)) {
+      } else if (ordering.gt(value, node.value)) {
         node.right = deleteNode(node.right, value)
       } else {
         (node.left, node.right) match {
@@ -124,12 +124,24 @@ class BinaryTree[T](implicit ordering: Ordering[T]) {
     findByValueNode(root, value, 0)
   }
 
+  def forEach(f: T => Unit): Unit = {
+    forEachNode(root, f)
+  }
+
+  private def forEachNode(current: Option[Node[T]], f: T => Unit): Unit = current match {
+    case Some(node) =>
+      forEachNode(node.left, f)
+      f(node.value)
+      forEachNode(node.right, f)
+    case None =>
+  }
+
   private def findByValueNode(current: Option[Node[T]], value: T, currentIndex: Int): Int = current match {
     case Some(node) =>
       val leftSubtreeCount = countNodes(node.left)
-      if (ordering.equiv(value,node.value)) {
+      if (ordering.equiv(value, node.value)) {
         currentIndex + leftSubtreeCount
-      } else if (ordering.lt(value,node.value)) {
+      } else if (ordering.lt(value, node.value)) {
         findByValueNode(node.left, value, currentIndex)
       } else {
         findByValueNode(node.right, value, currentIndex + leftSubtreeCount + 1)

@@ -1,4 +1,4 @@
-import scala.math.{sqrt, pow}
+import scala.math.{pow, sqrt}
 import scala.util.Try
 
 
@@ -14,6 +14,8 @@ class Point(val x: Double, val y: Double) {
 
 object Point {
   val strname = "2DPoint"
+  val strreprexample = "0.5|7.8"
+
   def deserializeFromString(str: String): Option[Point] = {
     str.split('|') match {
       case Array(xStr, yStr) => Try {

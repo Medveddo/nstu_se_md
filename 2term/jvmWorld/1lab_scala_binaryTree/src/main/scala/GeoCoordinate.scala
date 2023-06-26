@@ -9,12 +9,12 @@ class GeoCoordinate(val latitude: Double, val longitude: Double) {
   def serializeToString: String = {
     s"$latitude|$longitude"
   }
-
-
 }
 
 object GeoCoordinate {
   val strname = "GeoCoordinate"
+  val strreprexample = "1.5|2.8"
+
   def deserializeFromString(str: String): Option[GeoCoordinate] = {
     str.split('|') match {
       case Array(latStr, lonStr) => Try {
