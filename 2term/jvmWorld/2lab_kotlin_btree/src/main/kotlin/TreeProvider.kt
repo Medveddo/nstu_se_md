@@ -2,8 +2,8 @@ import net.jemzart.jsonkraken.JsonKraken
 import net.jemzart.jsonkraken.JsonValue
 
 class TreeProvider {
-    private var tree: BinaryTree<CustomTypeTrait>? = null
-    private val deserializers: Map<String, CustomTypeTrait> = mapOf(
+    private var tree: BinaryTree<CustomTypeInterface>? = null
+    private val deserializers: Map<String, CustomTypeInterface> = mapOf(
         GeoCoordinate(0.0, 0.0).typeName to GeoCoordinate(0.0, 0.0),
         Point2D(0.0, 0.0).typeName to Point2D(0.0, 0.0),
     )
@@ -36,7 +36,7 @@ class TreeProvider {
 
     fun initializeWithEmptyTree(typeName: String) {
         if (deserializers.containsKey(typeName)) {
-            tree = BinaryTree<CustomTypeTrait>()
+            tree = BinaryTree<CustomTypeInterface>()
             currentType = typeName
         } else {
             throw IllegalArgumentException("Unsupported type: $typeName")
@@ -57,7 +57,7 @@ class TreeProvider {
         return parsedType
     }
 
-    fun getTree(): BinaryTree<CustomTypeTrait>? {
+    fun getTree(): BinaryTree<CustomTypeInterface>? {
         return tree
     }
 }

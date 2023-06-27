@@ -1,7 +1,6 @@
 trait CustomTypeTrait {
   def typeName: String
 
-
   def typeExampleRepresentation: String
 
   def createRandomInstance(): this.type

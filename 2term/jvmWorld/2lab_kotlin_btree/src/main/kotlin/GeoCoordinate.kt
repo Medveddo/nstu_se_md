@@ -1,9 +1,7 @@
-import kotlin.math.pow
-import kotlin.math.sqrt
 import kotlin.random.Random
 import java.math.RoundingMode
 
-class GeoCoordinate(val latitude: Double, val longitude: Double) : CustomTypeTrait {
+class GeoCoordinate(val latitude: Double, val longitude: Double) : CustomTypeInterface {
 
     override val typeName: String
         get() = "GeoCoordinate"
@@ -11,7 +9,7 @@ class GeoCoordinate(val latitude: Double, val longitude: Double) : CustomTypeTra
     override val typeExampleRepresentation: String
         get() = "1.5|2.8"
 
-    override fun createRandomInstance(): CustomTypeTrait {
+    override fun createRandomInstance(): CustomTypeInterface {
         val latitude = (Random.nextDouble() * 200 - 100).toBigDecimal().setScale(2, RoundingMode.HALF_UP).toDouble()
         val longitude = (Random.nextDouble() * 200 - 100).toBigDecimal().setScale(2, RoundingMode.HALF_UP).toDouble()
 
@@ -26,7 +24,7 @@ class GeoCoordinate(val latitude: Double, val longitude: Double) : CustomTypeTra
         return "$latitude|$longitude"
     }
 
-    override fun deserializeFromString(str: String): CustomTypeTrait? {
+    override fun deserializeFromString(str: String): CustomTypeInterface? {
         val parts = str.split('|')
         return when {
             parts.size == 2 -> {
@@ -42,7 +40,7 @@ class GeoCoordinate(val latitude: Double, val longitude: Double) : CustomTypeTra
         }
     }
 
-    override fun compare(other: CustomTypeTrait): Int {
+    override fun compare(other: CustomTypeInterface): Int {
         return when (other) {
             is GeoCoordinate -> {
                 when {

@@ -3,7 +3,7 @@ import net.jemzart.jsonkraken.JsonObject
 import net.jemzart.jsonkraken.JsonValue
 import net.jemzart.jsonkraken.JsonNull
 
-class BinaryTree<T : CustomTypeTrait> {
+class BinaryTree<T : CustomTypeInterface> {
     private var root: Node<T>? = null
 
     fun getParentNode(): Node<T>? {
@@ -173,13 +173,13 @@ class BinaryTree<T : CustomTypeTrait> {
 
 
     companion object {
-        fun <T : CustomTypeTrait> fromList(values: List<T>): BinaryTree<T> {
+        fun <T : CustomTypeInterface> fromList(values: List<T>): BinaryTree<T> {
             val tree = BinaryTree<T>()
             values.forEach { tree.insert(it) }
             return tree
         }
 
-        fun <T : CustomTypeTrait> fromJsonString(jsonString: String, factory: CustomTypeTrait): BinaryTree<T> {
+        fun <T : CustomTypeInterface> fromJsonString(jsonString: String, factory: CustomTypeInterface): BinaryTree<T> {
             val tree = BinaryTree<T>()
             val parsed = JsonKraken.deserialize(jsonString) as JsonObject
             val rootNode = constructTree(parsed["root"], factory) as Node<T>?
@@ -187,7 +187,7 @@ class BinaryTree<T : CustomTypeTrait> {
             return tree
         }
 
-        private fun <T : CustomTypeTrait> constructTree(node: JsonValue, factory: T): Node<T>? {
+        private fun <T : CustomTypeInterface> constructTree(node: JsonValue, factory: T): Node<T>? {
             if (node is JsonNull) {
                 return null
             } else {

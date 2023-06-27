@@ -3,7 +3,7 @@ import kotlin.math.sqrt
 import kotlin.random.Random
 import java.math.RoundingMode
 
-class Point2D(val x: Double, val y: Double) : CustomTypeTrait {
+class Point2D(val x: Double, val y: Double) : CustomTypeInterface {
 
     override val typeName: String
         get() = "Point2D"
@@ -43,7 +43,7 @@ class Point2D(val x: Double, val y: Double) : CustomTypeTrait {
     val distanceFromOrigin: Double
         get() = sqrt(x.pow(2) + y.pow(2))
 
-    override fun compare(other: CustomTypeTrait): Int {
+    override fun compare(other: CustomTypeInterface): Int {
         return when (other) {
             is Point2D -> {
                 val distanceA = this.distanceFromOrigin

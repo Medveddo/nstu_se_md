@@ -12,16 +12,40 @@ import java.io.PrintWriter
 class BinaryTreeApp : Application() {
 
     private fun getTreeItemForBinaryTree(node: Node<*>?, direction: String = ""): TreeItem<String> {
-        return if (node != null) {
+        if (node != null) {
             val rootNode = TreeItem<String>("$direction${node.value}")
-            val leftNode = getTreeItemForBinaryTree(node.left, "L\t")
-            val rightNode = getTreeItemForBinaryTree(node.right, "R\t")
 
-            rootNode.children.addAll(leftNode, rightNode)
+            val leftNode: TreeItem<String>? = if (node.left != null) {
+                getTreeItemForBinaryTree(node.left, "L\t")
+            } else {
+                null
+            }
+
+            val rightNode: TreeItem<String>? = if (node.right != null) {
+                getTreeItemForBinaryTree(node.right, "R\t")
+            } else {
+                null
+            }
+
+            when {
+                leftNode == null && rightNode == null -> {
+                    // No operation
+                }
+                leftNode != null && rightNode == null -> {
+                    rootNode.children.addAll(TreeItem("Empty leaf"), leftNode)
+                }
+                leftNode == null && rightNode != null -> {
+                    rootNode.children.addAll(rightNode, TreeItem("Empty leaf"))
+                }
+                else -> {
+                    rootNode.children.addAll(leftNode, rightNode)
+                }
+            }
+
             rootNode.isExpanded = true
-            rootNode
+            return rootNode
         } else {
-            TreeItem("Empty leaf")
+            return TreeItem("Empty tree")
         }
     }
 
