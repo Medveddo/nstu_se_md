@@ -132,7 +132,11 @@ class BinaryTree<T : CustomTypeInterface> {
         return root?.value?.typeName ?: ""
     }
 
-    private inner class DepthFirstIterator(private val rootNode: Node<T>?) : Iterator<Pair<T, String>> {
+    fun depthFirstIterator(): DepthFirstIterator {
+        return DepthFirstIterator(root)
+    }
+
+    inner class DepthFirstIterator(private val rootNode: Node<T>?) : Iterator<Pair<T, String>> {
         private val stack: MutableList<Pair<Node<T>?, String>> = mutableListOf()
         private var nextValue: Pair<T, String>? = null
 
