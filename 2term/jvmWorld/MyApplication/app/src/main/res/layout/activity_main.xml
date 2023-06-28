@@ -13,15 +13,51 @@
         android:layout_height="wrap_content" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/insertRandomButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button 1" />
+        android:text="Insert Random" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/rebalanceButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button 2" />
+        android:text="Rebalance" />
+
+    <TextView
+        android:id="@+id/elementRepresentationExample"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Example Text" />
+
+    <EditText
+        android:id="@+id/inputDataField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter data string representation" />
+
+    <Button
+        android:id="@+id/addElementButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Element" />
+
+    <Button
+        android:id="@+id/saveToFileButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save to file" />
+
+    <Button
+        android:id="@+id/loadFromFileButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Load from file" />
+
+    <ExpandableListView
+        android:id="@+id/expandableListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
 
 </LinearLayout>
