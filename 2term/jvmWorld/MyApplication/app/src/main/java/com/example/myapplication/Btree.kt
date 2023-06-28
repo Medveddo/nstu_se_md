@@ -59,6 +59,20 @@ class BinaryTree<T : CustomTypeInterface> {
         printNode(root, "")
     }
 
+    fun prettyPrintToString(): String {
+        val stringBuilder = StringBuilder()
+        printNodeToString(root, "", stringBuilder)
+        return stringBuilder.toString()
+    }
+
+    private fun printNodeToString(current: Node<T>?, indent: String, stringBuilder: StringBuilder) {
+        current?.let {
+            printNodeToString(it.left, "$indent    ", stringBuilder)
+            stringBuilder.append("$indent${it.value}\n")
+            printNodeToString(it.right, "$indent    ", stringBuilder)
+        }
+    }
+
     private fun printNode(current: Node<T>?, indent: String) {
         current?.let {
             printNode(it.left, "$indent    ")
